@@ -1,0 +1,28 @@
+
+<link rel="stylesheet" href="{{ STATIC_URL }}imgareaselect/css/imgareaselect-default.css" type="text/css" />
+<script type="text/javascript" src="{{ STATIC_URL }}imgareaselect/jquery.imgareaselect.min.js"></script>
+
+<script type="text/javascript">
+    
+</script>
+
+
+<div id="uploadAvatar">
+    <div id="uploadAvatarUploadUrl" style="display: none;">{% url "upload_avatar_upload_url" %}</div>
+    <div id="uploadAvatarCropUrl" style="display: none;">{% url "upload_avatar_crop_url" %}</div>
+    <div id="uploadAvatarCsrfToken" style="display: none;">{% csrf_token %}</div>
+    <div id="uploadAvatarSelectArea">
+        <input type="file" name="upload_avatar_img" /> 请选择文件
+    </div>
+    
+    <div id="uploadAvatarPreviewArea">
+        <img />
+    </div>
+    
+    <div id="uploadAvatarCoorsValue">
+        <input id="uploadAvatarValueX" name="uploadAvatarValueX" />
+        <input id="uploadAvatarValueY" name="uploadAvatarValueY" />
+        <input id="uploadAvatarValueW" name="uploadAvatarValueW" />
+        <input id="uploadAvatarValueH" name="uploadAvatarValueH" />
+    </div>
+</div>
