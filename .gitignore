@@ -3,4 +3,6 @@
 *.bak
 
 env
-
+example/static
+example/upload
+test.db

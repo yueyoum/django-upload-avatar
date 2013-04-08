@@ -1,28 +1,201 @@
-
-<link rel="stylesheet" href="{{ STATIC_URL }}imgareaselect/css/imgareaselect-default.css" type="text/css" />
-<script type="text/javascript" src="{{ STATIC_URL }}imgareaselect/jquery.imgareaselect.min.js"></script>
-
-<script type="text/javascript">
-    
-</script>
-
-
 <div id="uploadAvatar">
-    <div id="uploadAvatarUploadUrl" style="display: none;">{% url "upload_avatar_upload_url" %}</div>
-    <div id="uploadAvatarCropUrl" style="display: none;">{% url "upload_avatar_crop_url" %}</div>
-    <div id="uploadAvatarCsrfToken" style="display: none;">{% csrf_token %}</div>
+    <link rel="stylesheet" href="{{ STATIC_URL }}imgareaselect/css/imgareaselect-default.css" type="text/css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}uploadify/uploadify.css" type="text/css" />
+    <script type="text/javascript" src="{{ STATIC_URL }}imgareaselect/jquery.imgareaselect.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}uploadify/jquery.uploadify.min.js"></script>
+    
+    <style type="text/css">
+        .upload-avatar-btn {
+            color: whith;
+            background: #456F9C;
+            border: none;
+        }
+        
+        .uploadify:hover .uploadify-button {
+            background: #5F9EE2;
+        }
+        
+        #uploadAvatarSelBtn {
+            width: 200px;
+            height: 100px;
+        }
+        
+        #uploadAvatarSelectArea {
+            width: 300px;
+            height: 300px;
+            border: 1px solid #ccc;
+            overflow: hidden;
+            float: left;
+        }
+        
+        #uploadAvatarPreviewArea {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #ccc;
+            overflow: hidden;
+            float: right;
+        }
+    </style>
+    
+    <script type="text/javascript">
+        $(function(){
+            $('#uploadAvatarInput').uploadify({
+                'hideButton': true,
+                'wmode': 'transparent',
+                'buttonClass': 'upload-avatar-btn',
+                'buttonText': '选择图片',
+                'swf': '/static/uploadify/uploadify.swf',
+                'uploader': '/uploadavatar_upload',
+                //'fileSizeLimit': '100KB',
+                'fileTypeDesc': 'Image Fiels',
+                'fileTypeExts': '*.jpg;*.jpeg;*.png;*.gif',
+                'multi': false,
+                'auto': true,
+                
+                'onUploadSuccess': function(file, data, response) {
+                    image_selection_initialize(data);
+                },
+                
+                'onUploadError': function(file, errorCode, errorMsg, errorString) {
+                    alert('error, try later');
+                }
+            });
+            
+            
+            $('#uploadAvatarCropSubmit').click(function(){
+                $(this).attr('disabled', 'disabled');
+                var x1 = $('#uploadAvatarValueX1').val();
+                var y1 = $('#uploadAvatarValueY1').val();
+                var x2 = $('#uploadAvatarValueX2').val();
+                var y2 = $('#uploadAvatarValueY2').val();
+                if(x1 == "" || y1 == "" || x2 == "" ||y2 == "") {
+                    $(this).removeAttr('disabled');
+                    return false;
+                }
+                
+                $.ajax({
+                    type: 'POST',
+                    url: '/uploadavatar_crop',
+                    data: {
+                        x1: x1,
+                        y1: y1,
+                        x2: x2,
+                        y2: y2
+                    },
+                    async: false,
+                    dataType: 'json',
+                    success: function(data){
+                        if(data == '0') {
+                            $('#uploadAvatarCropSucceed').show(100);
+                        }
+                        else {
+                            $('#uploadAvatarCropFailure').show(100);
+                        }
+                    },
+                    error: function(XmlHttprequest, textStatus, errorThrown) {
+                        alert("crop error");
+                    }
+                });
+                
+                $(this).removeAttr('disabled');
+                return false;
+            });
+            
+        });
+        
+        function image_selection_initialize(data) {
+            $('#uploadAvatarSelectArea').empty();
+            $('#uploadAvatarPreviewArea').empty();
+            $('#uploadAvatarPreviewArea').append('<img />');
+            $('#uploadAvatarPreviewArea img').attr('src', data);
+            
+            $('#uploadAvatarSelectArea').append('<img />');
+            $('#uploadAvatarSelectArea img').attr('src', data).load(function(){
+                $(this).unbind('load');
+                
+                var img_width = $(this).width();
+                var img_height = $(this).height();
+                
+                console.log(img_width +', ' + img_height);
+                if(img_width >= img_height) {
+                    $(this).css('width', "300px");
+                }
+                else {
+                    $(this).css('height', "300px");
+                }
+                
+                img_width = $(this).width();
+                img_height = $(this).height();
+                
+                $(this).imgAreaSelect({
+                    handles: true,
+                    aspectRatio: "1:1",
+                    fadeSpeed: 100,
+                    minHeight: 50,
+                    minWidth: 50,
+                    x1: img_width/2-25 > 0 ? img_width/2-25 : 0,
+                    y1: img_height/2-25 > 0 ? img_height/2-25 : 0,
+                    x2: img_width/2+25 > img_width ? img_width : img_width/2+25,
+                    y2: img_height/2+25 > img_height ? img_height : img_height/2+25,
+                    onSelectChange: updateCoors
+                });
+            });
+        }
+        
+        
+        function updateCoors(img, selection) {
+          $("#uploadAvatarValueX1").val(selection.x1);
+          $("#uploadAvatarValueY1").val(selection.y1);
+          $("#uploadAvatarValueX2").val(selection.x2);
+          $("#uploadAvatarValueY2").val(selection.y2);
+          updatePreview(img, selection);
+        };
+        
+        function updatePreview(img, selection) {
+          if(parseInt(selection.width) > 0) {
+            var ratiox = 100 / selection.width;
+            var ratioy = 100 / selection.height;
+            $("#uploadAvatarPreviewArea img").css({
+              width: Math.round(ratiox * img.width) + 'px',
+              marginLeft: '-' + Math.round(ratiox * selection.x1) + 'px',
+              marginTop: '-' + Math.round(ratioy * selection.y1) + 'px'
+            });
+          }
+        }
+
+    </script>
+    
+    
+    <div id="uploadAvatarUploadUrl" style="display: none;">"upload_avatar_upload_url"</div>
+    <div id="uploadAvatarCropUrl" style="display: none;">"upload_avatar_crop_url"</div>
+
+    <div style="display: none;">
+        <input id="uploadAvatarValueX1" />
+        <input id="uploadAvatarValueY1" />
+        <input id="uploadAvatarValueX2" />
+        <input id="uploadAvatarValueY2" />
+    </div>
+    
+    
+    
+    <div id="uploadAvatarSelBtn">
+        <input type="file" id="uploadAvatarInput"/>
+    </div>
+    
     <div id="uploadAvatarSelectArea">
-        <input type="file" name="upload_avatar_img" /> 请选择文件
     </div>
     
     <div id="uploadAvatarPreviewArea">
-        <img />
     </div>
     
-    <div id="uploadAvatarCoorsValue">
-        <input id="uploadAvatarValueX" name="uploadAvatarValueX" />
-        <input id="uploadAvatarValueY" name="uploadAvatarValueY" />
-        <input id="uploadAvatarValueW" name="uploadAvatarValueW" />
-        <input id="uploadAvatarValueH" name="uploadAvatarValueH" />
+    <div style="clear: both;"></div>
+    
+    <div id="uploadAvatarCropBtns">
+        <button id="uploadAvatarCropSubmit">Crop</button>
+        <button id="uploadAvatarCropCancel">Cancel</button>
     </div>
+    
+    <div id="uploadAvatarCropSucceed" style="display: none;">succeed</div>
+    <div id="uploadAvatarCropFailure" style="display: none;">Failure</div>
+    
 </div>
