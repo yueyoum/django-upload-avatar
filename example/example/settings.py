@@ -134,10 +134,9 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
+    
+    'django.contrib.admin',
+    
     'upload_avatar',
     'app',
 )
@@ -173,4 +172,6 @@ LOGGING = {
 
 
 UPLOAD_AVATAR_UPLOAD_ROOT = os.path.join(PROJECT_PATH, 'upload')
-UPLOAD_AVATAR_URL_PREFIX = '/upload/'
+UPLOAD_AVATAR_AVATAR_ROOT = os.path.join(PROJECT_PATH, 'avatar')
+UPLOAD_AVATAR_URL_PREFIX_ORIGINAL = '/uploadedimage/'
+UPLOAD_AVATAR_URL_PREFIX_CROPPED = '/avatar/'
