@@ -44,10 +44,12 @@ class UploadedImage(models.Model):
 
 
 def _delete_avatar_on_disk(sender, instance, *args, **kwargs):
-    try:
-        os.unlink(instance.get_uploaded_image_path())
-    except OSError:
-        pass
+    path = instance.get_image_path()
+    if path:
+        try:
+            os.unlink(path)
+        except OSError:
+            pass
     
     
 post_delete.connect(_delete_avatar_on_disk, sender=UploadedImage)

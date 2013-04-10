@@ -5,4 +5,5 @@
 env
 example/static
 example/upload
+example/avatar
 test.db

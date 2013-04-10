@@ -12,10 +12,10 @@ urlpatterns = patterns('',
 
     url(r'^$', views.home, name="home"),
     url(r'^upload/?$', views.upload, name="upload"),
-    url(r'^%s/(?P<filename>.+)/?$' % UPLOAD_AVATAR_URL_PREFIX_ORIGINAL,
+    url(r'%s(?P<filename>.+)/?$' % UPLOAD_AVATAR_URL_PREFIX_ORIGINAL,
         views.get_upload_images
         ),
-    url(r'^%s/(?P<filename>.+)/?$' % UPLOAD_AVATAR_URL_PREFIX_CROPPED,
+    url(r'^%s(?P<filename>.+)/?$' % UPLOAD_AVATAR_URL_PREFIX_CROPPED,
         views.get_avatar
         )
 )
