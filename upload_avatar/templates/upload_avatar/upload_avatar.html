@@ -22,26 +22,31 @@
             position: absolute;
             top: 0;
             left: 0;
-            opacity: 0.2;
-            filter: alpha(opacity=20);
+            opacity: 0;
+            filter: alpha(opacity=0);
             font-size: 200%;
         }
         
         #uploadAvatarSelectArea {
-            width: 300px;
-            height: 300px;
+            width: {{ crop_image_area_size }}px;
+            height: {{ crop_image_area_size }}px;
             border: 1px solid #ddd;
             overflow: hidden;
             float: left;
         }
         
         #uploadAvatarPreviewArea {
-            width: 50px;
-            height: 50px;
-            border: 1px solid #ddd;
-            overflow: hidden;
             float: right;
         }
+        
+        {% for p in preview_areas %}
+            #uploadAvatarPreviewArea{{ p.size }} {
+                width: {{ p.size }}px;
+                height: {{ p.size }}px;
+                border: 1px solid #ddd;
+                overflow: hidden;
+            }
+        {% endfor %}
     </style>
     
     <script type="text/javascript">
@@ -55,8 +60,12 @@
             
             $('#uploadAvatarInputFile').width(input_width).height(input_height).change(function(){
                 if($(this).val() == ''){return;}
+                var p = new RegExp(/\.(jpg|jpeg|png|gif)$/);
+                var fileanme = $(this).val().toLowerCase().replace(/^\s+|\s+$/g, '');
+                if(!p.test(fileanme)){alert("{{ INVALID_IMAGE }}"); return;}
                 $('#uploadAvatarForm').submit();
                 $(this).val('');
+                $('#uploadAvatarCropSubmit').removeAttr('disabled');
             });
             
             
@@ -80,19 +89,18 @@
                 $(this).removeAttr('disabled');
                 return false;
             });
-            
         });
         
         function upload_avatar_error(error_msg) {
             alert(error_msg);
-        }
+        };
         
         
         function upload_avatar_success(image_url) {
             $('#uploadAvatarSelectArea').empty();
-            $('#uploadAvatarPreviewArea').empty();
-            $('#uploadAvatarPreviewArea').append('<img />');
-            $('#uploadAvatarPreviewArea img').attr('src', image_url);
+            $('#uploadAvatarPreviewArea div').empty();
+            $('#uploadAvatarPreviewArea div').append('<img />');
+            $('#uploadAvatarPreviewArea div img').attr('src', image_url);
             
             $('#uploadAvatarSelectArea').append('<img />');
             $('#uploadAvatarSelectArea img').attr('src', image_url).load(function(){
@@ -101,12 +109,13 @@
                 var img_width = $(this).width();
                 var img_height = $(this).height();
                 
-                if(img_width > 300 || img_height > 300) {
+                
+                if(img_width > {{ crop_image_area_size }} || img_height > {{ crop_image_area_size }}) {
                     if(img_width >= img_height) {
-                        $(this).css('width', "300px");
+                        $(this).css('width', "{{ crop_image_area_size }}px");
                     }
                     else {
-                        $(this).css('height', "300px");
+                        $(this).css('height', "{{ crop_image_area_size }}px");
                     }
                 }
                 
@@ -126,27 +135,32 @@
                     onSelectChange: updateCoors
                 });
             });
-        }
+        };
         
         function updateCoors(img, selection) {
           $("#uploadAvatarValueX1").val(selection.x1);
           $("#uploadAvatarValueY1").val(selection.y1);
           $("#uploadAvatarValueX2").val(selection.x2);
           $("#uploadAvatarValueY2").val(selection.y2);
-          updatePreview(img, selection);
+          
+          {% for p in preview_areas %}
+            updatePreview{{ p.size }}(img, selection);
+          {% endfor %}
         };
         
-        function updatePreview(img, selection) {
-          if(parseInt(selection.width) > 0) {
-            var ratiox = 50 / selection.width;
-            var ratioy = 50 / selection.height;
-            $("#uploadAvatarPreviewArea img").css({
-              width: Math.round(ratiox * img.width) + 'px',
-              marginLeft: '-' + Math.round(ratiox * selection.x1) + 'px',
-              marginTop: '-' + Math.round(ratioy * selection.y1) + 'px'
-            });
-          }
-        };
+        {% for p in preview_areas %}
+            function updatePreview{{ p.size }}(img, selection) {
+              if(parseInt(selection.width) > 0) {
+                var ratiox = {{ p.size }} / selection.width;
+                var ratioy = {{ p.size }} / selection.height;
+                $("#uploadAvatarPreviewArea{{ p.size }} img").css({
+                  width: Math.round(ratiox * img.width) + 'px',
+                  marginLeft: '-' + Math.round(ratiox * selection.x1) + 'px',
+                  marginTop: '-' + Math.round(ratioy * selection.y1) + 'px'
+                });
+              }
+            };
+        {% endfor %}
         
         function crop_avatar_success(msg) {
             $('#uploadAvatarCropResult').hide().text(msg).show(200);
@@ -175,12 +189,17 @@
     <iframe id="uploadAvatarIframe" name="uploadAvatarIframe" style="display: none;"></iframe>
     
     <div id="uploadAvatarSelectArea"></div>
-    <div id="uploadAvatarPreviewArea"></div>
+    <div id="uploadAvatarPreviewArea">
+        {% for p in preview_areas %}
+        <p>{{ p.text }}</p>
+        <div id="uploadAvatarPreviewArea{{ p.size }}"></div>
+        {% endfor %}
+    </div>
     
     <div style="clear: both;"></div>
     
     <div id="uploadAvatarBtns">
-        <button id="uploadAvatarCropSubmit">Crop</button>
+        <button id="uploadAvatarCropSubmit" disabled="disabled">Crop</button>
     </div>
     
     <div id="uploadAvatarCropResult" style="display: none;"></div>

@@ -49,13 +49,41 @@ if UPLOAD_AVATAR_GET_UID_FUNC is None:
     
     
 
-UPLOAD_AVATAR_RESIZE_SIZE = getattr(settings, 'UPLOAD_AVATAR_CROP_SIZE', 50)
+UPLOAD_AVATAR_RESIZE_SIZE = getattr(settings, 'UPLOAD_AVATAR_CROP_SIZE', [50,])
+UPLOAD_AVATAR_DEFAULT_SIZE = getattr(settings, 'UPLOAD_AVATAR_DEFAULT_SIZE', 50)
 
-UPLOAD_AVATAR_SAVE_FORMAT = getattr(settings, 'UPLOAD_AVATAR_SAVE_FORMAT', 'jpeg')
+UPLOAD_AVATAR_SAVE_FORMAT = getattr(settings, 'UPLOAD_AVATAR_SAVE_FORMAT', 'png')
 UPLOAD_AVATAR_SAVE_QUALITY = getattr(settings, 'UPLOAD_AVATAR_SAVE_QUALITY', 90)
 
 
-UPLOAD_AVATAR_DELETE_ORIGINAL_AFTER_CROP = getattr(settings,
-                                                   'UPLOAD_AVATAR_DELETE_ORIGINAL_AFTER_CROP',
-                                                   True
-                                                   )
+UPLOAD_AVATAR_DELETE_ORIGINAL_AFTER_CROP = getattr(settings, 'UPLOAD_AVATAR_DELETE_ORIGINAL_AFTER_CROP', True)
+
+
+
+
+UPLOAD_AVATAR_WEB_LAYOUT = {
+    'crop_image_area_size': 300,
+    
+    'preview_areas': [
+        {
+            'size': 50,
+            'text': 'Small preview'
+        },
+    ]
+}
+
+UPLOAD_AVATAR_TEXT = {
+    'TEST_FUNC_NOT_PASSED': 'Forbidden',
+    'INVALID_IMAGE': 'Invalid File, Please choose an image',
+    'NO_IMAGE': 'Please upload image',
+    'TOO_LARGE': 'File Too Large, choose a smaller one',
+    'SUCCESS': 'Success',
+}
+
+UPLOAD_AVATAR_WEB_LAYOUT.update(
+    getattr(settings, 'UPLOAD_AVATAR_WEB_LAYOUT', {})
+)
+
+UPLOAD_AVATAR_TEXT.update(
+    getattr(settings, 'UPLOAD_AVATAR_TEXT', {})
+)

@@ -21,6 +21,9 @@ from .app_settings import (
     UPLOAD_AVATAR_SAVE_FORMAT,
     UPLOAD_AVATAR_SAVE_QUALITY,
     UPLOAD_AVATAR_DELETE_ORIGINAL_AFTER_CROP,
+    
+    UPLOAD_AVATAR_WEB_LAYOUT,
+    UPLOAD_AVATAR_TEXT,
 )
 
 
@@ -28,6 +31,9 @@ from .app_settings import (
 
 from .signals import avatar_crop_done
 from .models import UploadedImage
+
+
+border_size = UPLOAD_AVATAR_WEB_LAYOUT['crop_image_area_size']
 
 
 class UploadAvatarError(Exception):
@@ -39,9 +45,9 @@ def protected(func):
     @wraps(func)
     def deco(request, *args, **kwargs):
         if not test_func(request):
-            print 'test failure'
-            print request.user
-            return HttpResponse(status=403)
+            return HttpResponse(
+                "<script>window.parent.upload_avatar_error('%s')</script>" % UPLOAD_AVATAR_TEXT['TEST_FUNC_NOT_PASSED']
+            )
         try:
             return func(request, *args, **kwargs)
         except UploadAvatarError as e:
@@ -53,14 +59,13 @@ def protected(func):
 
 @protected
 def upload_avatar(request):
-    print request.user.username
     try:
         uploaded_file = request.FILES['uploadavatarfile']
     except KeyError:
-        return HttpResponse(status=403)
+        raise UploadAvatarError(UPLOAD_AVATAR_TEXT['INVALID_IMAGE'])
     
     if uploaded_file.size > UPLOAD_AVATAR_MAX_SIZE:
-        return HttpResponse("File too large", status=403)
+        raise UploadAvatarError(UPLOAD_AVATAR_TEXT['TOO_LARGE'])
     
     
     name, ext = os.path.splitext(uploaded_file.name)
@@ -75,14 +80,21 @@ def upload_avatar(request):
         for c in uploaded_file.chunks(10240):
             f.write(c)
             
-            
-    # uploaed image has been saved on disk, now save it name in db
+    try:
+        Image.open(fpath)
+    except IOError:
+        try:
+            os.unlink(fpath)
+        except:
+            pass
+        raise UploadAvatarError(UPLOAD_AVATAR_TEXT['INVALID_IMAGE'])
+        
+    # uploaed image has been saved on disk, now save it's name in db
     if UploadedImage.objects.filter(uid=get_uid(request)).exists():
         UploadedImage.objects.filter(uid=get_uid(request)).update(image=new_name)
     else:
         UploadedImage.objects.create(uid=get_uid(request), image=new_name)
         
-    print UPLOAD_AVATAR_URL_PREFIX_ORIGINAL + new_name
     return HttpResponse(
         "<script>window.parent.upload_avatar_success('%s')</script>" % \
         (UPLOAD_AVATAR_URL_PREFIX_ORIGINAL + new_name)
@@ -94,11 +106,11 @@ def crop_avatar(request):
     try:
         upim = UploadedImage.objects.get(uid=get_uid(request))
     except UploadedImage.DoesNotExist:
-        raise UploadAvatarError('upload again')
+        raise UploadAvatarError(UPLOAD_AVATAR_TEXT['NO_IMAGE'])
     
     image_orig = upim.get_image_path()
     if not image_orig:
-        raise UploadAvatarError('upload again')
+        raise UploadAvatarError(UPLOAD_AVATAR_TEXT['NO_IMAGE'])
     
     x1 = int(request.POST['x1'])
     y1 = int(request.POST['y1'])
@@ -106,32 +118,38 @@ def crop_avatar(request):
     y2 = int(request.POST['y2'])
     
     
-    orig = Image.open(image_orig)
+    try:
+        orig = Image.open(image_orig)
+    except IOError:
+        raise UploadAvatarError(UPLOAD_AVATAR_TEXT['NO_IMAGE'])
+    
     orig_w, orig_h = orig.size
-    if orig_w <= 300 and orig_h <= 300:
+    if orig_w <= border_size and orig_h <= border_size:
         ratio = 1
     else:
         if orig_w > orig_h:
-            ratio = float(orig_w) / 300
+            ratio = float(orig_w) / border_size
         else:
-            ratio = float(orig_h) / 300
+            ratio = float(orig_h) / border_size
             
     box = [int(x * ratio) for x in [x1, y1, x2, y2]]
     avatar = orig.crop(box)
-    avatar = avatar.resize((UPLOAD_AVATAR_RESIZE_SIZE, UPLOAD_AVATAR_RESIZE_SIZE), Image.ANTIALIAS)
-    
     avatar_name, _ = os.path.splitext(upim.image)
-    avatar_name = '%s-%d.%s' % (avatar_name, UPLOAD_AVATAR_RESIZE_SIZE, UPLOAD_AVATAR_SAVE_FORMAT)
-    avatar_path = os.path.join(UPLOAD_AVATAR_AVATAR_ROOT, avatar_name)
     
-    avatar.save(avatar_path, UPLOAD_AVATAR_SAVE_FORMAT, quality=UPLOAD_AVATAR_SAVE_QUALITY)
-    print 'save done'
+    def _resize(size):
+        res = avatar.resize((size, size), Image.ANTIALIAS)
+        res_name = '%s-%d.%s' % (avatar_name, size, UPLOAD_AVATAR_SAVE_FORMAT)
+        res_path = os.path.join(UPLOAD_AVATAR_AVATAR_ROOT, res_name)
+        res.save(res_path, UPLOAD_AVATAR_SAVE_FORMAT, quality=UPLOAD_AVATAR_SAVE_QUALITY)
+        
+    for size in UPLOAD_AVATAR_RESIZE_SIZE:
+        _resize(size)
+        
     
     avatar_crop_done.send(sender=None, uid=get_uid(request), avatar_name=avatar_name)
     if UPLOAD_AVATAR_DELETE_ORIGINAL_AFTER_CROP:
         upim.delete()
-        print 'delete...'
         
     return HttpResponse(
-        "<script>window.parent.crop_avatar_success('done...')</script>" 
+        "<script>window.parent.crop_avatar_success('%s')</script>"  % UPLOAD_AVATAR_TEXT['SUCCESS']
     )

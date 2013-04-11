@@ -7,7 +7,8 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 
 
-from upload_avatar.app_settings import UPLOAD_AVATAR_UPLOAD_ROOT, UPLOAD_AVATAR_AVATAR_ROOT, UPLOAD_AVATAR_URL_PREFIX_CROPPED
+from upload_avatar.app_settings import UPLOAD_AVATAR_UPLOAD_ROOT, UPLOAD_AVATAR_AVATAR_ROOT, UPLOAD_AVATAR_RESIZE_SIZE
+from upload_avatar import uploadavatar_context
 
 from .models import User
 
@@ -45,12 +46,14 @@ def home(request):
         html = '<html><body><a href="/upload">upload avatar</a></body></html>'
         return HttpResponse(html)
     
+    imgs = map(lambda size: "<p><img src='%s'/></p>" % u.get_avatar_url(size), UPLOAD_AVATAR_RESIZE_SIZE)
+    
     html = """<html>
     <body>
     <h2>%s</h2>
-    <img src="%s" />
+    %s
     </boby>
-    </html>""" % (request.user.username, UPLOAD_AVATAR_URL_PREFIX_CROPPED + u.avatar_name)
+    </html>""" % (request.user.username, '\n'.join(imgs))
     return HttpResponse(html)
 
 
@@ -59,5 +62,6 @@ def home(request):
 def upload(request):
     return render_to_response(
         'upload.html',
+        uploadavatar_context,
         context_instance = RequestContext(request)
     )
