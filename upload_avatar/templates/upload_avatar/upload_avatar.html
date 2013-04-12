@@ -60,6 +60,13 @@
             
             $('#uploadAvatarInputFile').width(input_width + 50).height(input_height).change(function(){
                 if($(this).val() == ''){return;}
+                var $last_img = $('#uploadAvatarSelectArea img');
+                if($last_img.length) {
+                    var img_obj = $last_img.imgAreaSelect({instance: true});
+                    img_obj.remove();
+                }
+                $('#uploadAvatarSelectArea').empty();
+                $('#uploadAvatarPreviewArea div').empty();
                 var p = new RegExp(/\.(jpg|jpeg|png|gif)$/);
                 var fileanme = $(this).val().toLowerCase().replace(/^\s+|\s+$/g, '');
                 if(!p.test(fileanme)){alert("{{ INVALID_IMAGE }}"); return;}
