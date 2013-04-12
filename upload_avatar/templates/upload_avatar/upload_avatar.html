@@ -21,10 +21,10 @@
         #uploadAvatarInputFile {
             position: absolute;
             top: 0;
-            left: 0;
+            left: -20px;
             opacity: 0;
             filter: alpha(opacity=0);
-            font-size: 200%;
+            font-size: 300%;
         }
         
         #uploadAvatarSelectArea {
@@ -58,7 +58,7 @@
             var input_width = $('#uploadAvatarBtnLayout').width();
             var input_height = $('#uploadAvatarBtnLayout').height();
             
-            $('#uploadAvatarInputFile').width(input_width).height(input_height).change(function(){
+            $('#uploadAvatarInputFile').width(input_width + 50).height(input_height).change(function(){
                 if($(this).val() == ''){return;}
                 var p = new RegExp(/\.(jpg|jpeg|png|gif)$/);
                 var fileanme = $(this).val().toLowerCase().replace(/^\s+|\s+$/g, '');
@@ -122,18 +122,27 @@
                 img_width = $(this).width();
                 img_height = $(this).height();
                 
+                var sel = {};
+                sel['x1'] = Math.round(img_width/2-25 > 0 ? img_width/2-25 : 0),
+                sel['y1'] = Math.round(img_height/2-25 > 0 ? img_height/2-25 : 0),
+                sel['x2'] = Math.round(img_width/2+25 > img_width ? img_width : img_width/2+25),
+                sel['y2'] = Math.round(img_height/2+25 > img_height ? img_height : img_height/2+25),
+                sel['width'] = 50;
+                
                 $(this).imgAreaSelect({
                     handles: true,
                     aspectRatio: "1:1",
                     fadeSpeed: 100,
                     minHeight: 50,
                     minWidth: 50,
-                    x1: img_width/2-25 > 0 ? img_width/2-25 : 0,
-                    y1: img_height/2-25 > 0 ? img_height/2-25 : 0,
-                    x2: img_width/2+25 > img_width ? img_width : img_width/2+25,
-                    y2: img_height/2+25 > img_height ? img_height : img_height/2+25,
+                    x1: sel.x1,
+                    y1: sel.y1,
+                    x2: sel.x2,
+                    y2: sel.y2,
                     onSelectChange: updateCoors
                 });
+                
+                updateCoors({'width': img_width}, sel);
             });
         };
         
@@ -152,11 +161,10 @@
             function updatePreview{{ p.size }}(img, selection) {
               if(parseInt(selection.width) > 0) {
                 var ratiox = {{ p.size }} / selection.width;
-                var ratioy = {{ p.size }} / selection.height;
                 $("#uploadAvatarPreviewArea{{ p.size }} img").css({
                   width: Math.round(ratiox * img.width) + 'px',
                   marginLeft: '-' + Math.round(ratiox * selection.x1) + 'px',
-                  marginTop: '-' + Math.round(ratioy * selection.y1) + 'px'
+                  marginTop: '-' + Math.round(ratiox * selection.y1) + 'px'
                 });
               }
             };
@@ -181,7 +189,7 @@
         <form id="uploadAvatarForm" action="{% url 'uploadavatar_upload' %}" method="post" target="uploadAvatarIframe" enctype="multipart/form-data">
             {% csrf_token %}
             <div id="uploadAvatarBtnLayout">
-                <button>Choose File</button>
+                <button>{{ CHOOSE_IMAGE }}</button>
                 <input type="file" id="uploadAvatarInputFile" name="uploadavatarfile" />
             </div>
         </form>
@@ -199,7 +207,7 @@
     <div style="clear: both;"></div>
     
     <div id="uploadAvatarBtns">
-        <button id="uploadAvatarCropSubmit" disabled="disabled">Crop</button>
+        <button id="uploadAvatarCropSubmit" disabled="disabled">{{ CROP_IMAGE }}</button>
     </div>
     
     <div id="uploadAvatarCropResult" style="display: none;"></div>

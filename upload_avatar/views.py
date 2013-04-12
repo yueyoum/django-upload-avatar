@@ -112,10 +112,13 @@ def crop_avatar(request):
     if not image_orig:
         raise UploadAvatarError(UPLOAD_AVATAR_TEXT['NO_IMAGE'])
     
-    x1 = int(request.POST['x1'])
-    y1 = int(request.POST['y1'])
-    x2 = int(request.POST['x2'])
-    y2 = int(request.POST['y2'])
+    try:
+        x1 = int(request.POST['x1'])
+        y1 = int(request.POST['y1'])
+        x2 = int(request.POST['x2'])
+        y2 = int(request.POST['y2'])
+    except:
+        raise UploadAvatarError(UPLOAD_AVATAR_TEXT['ERROR'])
     
     
     try:

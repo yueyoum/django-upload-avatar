@@ -67,17 +67,20 @@ UPLOAD_AVATAR_WEB_LAYOUT = {
     'preview_areas': [
         {
             'size': 50,
-            'text': 'Small preview'
+            'text': 'Preview'
         },
     ]
 }
 
 UPLOAD_AVATAR_TEXT = {
+    'CHOOSE_IMAGE': 'Choose Image',
+    'CROP_IMAGE': 'Crop',
     'TEST_FUNC_NOT_PASSED': 'Forbidden',
     'INVALID_IMAGE': 'Invalid File, Please choose an image',
     'NO_IMAGE': 'Please upload image',
     'TOO_LARGE': 'File Too Large, choose a smaller one',
     'SUCCESS': 'Success',
+    'ERROR': 'Error, try later',
 }
 
 UPLOAD_AVATAR_WEB_LAYOUT.update(
