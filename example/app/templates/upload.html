@@ -1,5 +1,16 @@
-{% extends "base.html" %}
-
-{% block content %}
-    {% include "upload_avatar/upload_avatar.html" %}
-{% endblock %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Django Upload Avatar</title>
+        <script type="text/javascript" src="{{ STATIC_URL }}jquery-1.9.0.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}app.js"></script>
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app.css" />
+    </head>
+    
+    <body>
+        <div style="width: 600px; margin: 30px auto;">
+        {% include "upload_avatar/upload_avatar.html" %}
+        </div>
+    </body>
+</html>

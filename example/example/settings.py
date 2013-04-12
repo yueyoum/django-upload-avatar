@@ -175,3 +175,22 @@ UPLOAD_AVATAR_UPLOAD_ROOT = os.path.join(PROJECT_PATH, 'upload')
 UPLOAD_AVATAR_AVATAR_ROOT = os.path.join(PROJECT_PATH, 'avatar')
 UPLOAD_AVATAR_URL_PREFIX_ORIGINAL = 'uploadedimage/'
 UPLOAD_AVATAR_URL_PREFIX_CROPPED = 'avatar/'
+
+UPLOAD_AVATAR_RESIZE_SIZE = [50, 100, 140]
+
+UPLOAD_AVATAR_WEB_LAYOUT = {
+    'preview_areas': [
+        {
+            'size': 50,
+            'text': 'Small Preview'
+        },
+        {
+            'size': 100,
+            'text': 'Middle Preview'
+        },
+        {
+            'size': 140,
+            'text': 'Large Preview'
+        },
+    ]
+}

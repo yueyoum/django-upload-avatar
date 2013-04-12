@@ -7,11 +7,20 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 
 
-from upload_avatar.app_settings import UPLOAD_AVATAR_UPLOAD_ROOT, UPLOAD_AVATAR_AVATAR_ROOT, UPLOAD_AVATAR_RESIZE_SIZE
+from upload_avatar.app_settings import (
+    UPLOAD_AVATAR_UPLOAD_ROOT,
+    UPLOAD_AVATAR_AVATAR_ROOT,
+    UPLOAD_AVATAR_RESIZE_SIZE,
+)
+
 from upload_avatar import uploadavatar_context
 
 from .models import User
 
+
+#########################
+# In production, you don't need this,
+# static files should serve by web server, e.g. Nginx
 
 def find_mimetype(filename):
     """In production, you don't need this,
@@ -37,6 +46,9 @@ def get_avatar(request, filename):
         return HttpResponse(f.read(), mimetype=mimetype)
 
 
+#########################
+
+
 
 @login_required
 def home(request):
@@ -50,7 +62,7 @@ def home(request):
     
     html = """<html>
     <body>
-    <h2>%s</h2>
+    <h2>%s <a href="/upload">upload avatar</a></h2>
     %s
     </boby>
     </html>""" % (request.user.username, '\n'.join(imgs))
@@ -65,3 +77,4 @@ def upload(request):
         uploadavatar_context,
         context_instance = RequestContext(request)
     )
+

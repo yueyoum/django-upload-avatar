@@ -7,7 +7,7 @@ from upload_avatar.app_settings import UPLOAD_AVATAR_URL_PREFIX_CROPPED, UPLOAD_
 from . import views
 
 urlpatterns = patterns('',
-    url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
+    url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'admin/login.html'}),
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout'),
 
     url(r'^$', views.home, name="home"),

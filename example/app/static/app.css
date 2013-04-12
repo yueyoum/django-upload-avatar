@@ -1,0 +1,34 @@
+#uploadAvatarUploadArea {
+    margin: 20px;
+}
+
+#uploadAvatarBtnLayout {
+    width: 140px!important;
+    height: 50px!important;
+}
+
+
+.button-light-color {
+    background: #6993BD;
+    border: none;
+}
+
+.button-deep-color {
+    background: #34495E;
+    border: none;
+    color: white;
+}
+
+#uploadAvatarBtns {
+    margin: 20px;
+}
+
+#uploadAvatarCropSubmit {
+    width: 80px;
+    height: 30px;
+}
+
+#uploadAvatarCropResult {
+    font-size: 1.2em;
+    color: #34495E;
+}
