@@ -6,7 +6,13 @@ packages = [
     'upload_avatar',
 ]
 
-package_data = {'upload_avatar': ['upload_avatar/static', 'upload_avatar/templates']}
+package_data = {
+    'upload_avatar': [
+        'static/imgareaselect/*.js',
+        'static/imgareaselect/css/*',
+        'templates/upload_avatar/upload_avatar.html',
+    ]
+}
 
 setup(
     name='django-upload-avatar',
