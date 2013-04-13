@@ -2,6 +2,8 @@
 
 A django app for upload avatars
 
+**IE6 Compatible**
+
 You can find a showcase at [youtube][1] or [youku][2]
 
 
