@@ -34,12 +34,13 @@ where to store the cropped avatars.  **Absolute path**.
 
 ###### UPLOAD_AVATAR_URL_PREFIX_ORIGINAL
 
-URL prefix for the original uploaded image, `<img src="" />` display the uploaded image
+URL prefix for the original uploaded image, used for `<img src="" />` display the uploaded image
 for select area and crop. e.g. `uploadedimage/`.
 
 ###### UPLOAD_AVATAR_URL_PREFIX_CROPPED
 
-URL prefix for the real avatars. For display avatars in web page
+URL prefix for the real avatars. For display avatars in web page.
+e.g. `avatar/`
 
 
 #### In you app
@@ -81,7 +82,7 @@ Because `upload_avatar` app does not know how to get `uid` and `avatat_name`
 Also, you should define a function which like `save_avatar_in_db` in the example.
 and make `avatar_crop_done` signal connected with this function.
 
-#### views.py
+###### views.py
 
 In the upload avatar web page, you should pass the uploadavatar_context to template.
 
@@ -99,7 +100,7 @@ def upload(request):
     )
 ```
 
-#### templates
+###### templates
 
 In you `upload.html` template, Just simply do this:
 
@@ -107,12 +108,75 @@ In you `upload.html` template, Just simply do this:
 {% include "upload_avatar/upload_avatar.html" %}
 ```
 
-#### jQuery.js
+###### jQuery.js
 
 `upload_avatar` app needs jQuery, So ensure your app/site contains jquery
 
 Details see the `example` django project
 
 
-[1]: (http://www.youtube.com/watch?v=570yBlCfm5g)
-[2]: (http://v.youku.com/v_show/id_XNTQyNDA0OTQ4.html)
+## Optional settings
+
+###### UPLOAD_AVATAR_MAX_SIZE
+
+Max size allow upload. default is 3MB
+
+###### UPLOAD_AVATAR_TEST_FUNC
+
+this function controls whether the request to upload/crop view function is valid.
+
+this function take `request` as the only argument, return `True` means there is a valid
+request, otherwise this request is forbidden.
+
+default is:
+
+```python
+UPLOAD_AVATAR_TEST_FUNC = lambda request: request.method == 'POST' and \
+                          request.user.is_authenticated()
+```
+
+If you using custom user system, or has some other stuff to test,
+define your own test func
+
+###### UPLOAD_AVATAR_GET_UID_FUNC
+
+`upload_avatar` app does not know how to get uid from `request` object.
+
+default is
+
+```python
+UPLOAD_AVATAR_GET_UID_FUNC = lambda request: request.user.id
+```
+
+###### UPLOAD_AVATAR_RESIZE_SIZE
+
+How many different sizes you wanna to resize.
+
+**NOTICE**, the value must be list, even if there are only one size.
+
+Default is: `[50,]`
+
+###### UPLOAD_AVATAR_DEFAULT_SIZE
+
+Avatar default size which will be shown in you website,
+this is for call user.get_avatar_path(), user.get_avatar_url() more convenient
+
+
+###### UPLOAD_AVATAR_SAVE_FORMAT
+default `png`
+###### UPLOAD_AVATAR_SAVE_QUALITY
+default 90
+###### UPLOAD_AVATAR_DELETE_ORIGINAL_AFTER_CROP
+Whethe delete the uploaded original image after avatar cropped, default is True
+
+###### UPLOAD_AVATAR_WEB_LAYOUT
+###### UPLOAD_AVATAR_TEXT
+
+this two controls the web layout and texts shown on web or javascript alert
+
+All settings and Details, Default Values see [app_settings.py][3]
+
+
+[1]: http://www.youtube.com/watch?v=570yBlCfm5g
+[2]: http://v.youku.com/v_show/id_XNTQyNDA0OTQ4.html
+[3]: /avatar_upload/app_settings.py
