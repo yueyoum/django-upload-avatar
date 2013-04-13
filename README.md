@@ -12,6 +12,8 @@ You can find a showcase at [youtube][1] or [youku][2]
 or clone git repo
 
     git clone https://github.com/yueyoum/django-upload-avatar.git
+    cd django-upload-avatar
+    python setup.py install
     
     
 ## Usage
@@ -135,7 +137,7 @@ UPLOAD_AVATAR_TEST_FUNC = lambda request: request.method == 'POST' and \
                           request.user.is_authenticated()
 ```
 
-If you using custom user system, or has some other stuff to test,
+If you are using custom user system, or has some other stuff to test,
 define your own test func
 
 ###### UPLOAD_AVATAR_GET_UID_FUNC
@@ -148,6 +150,9 @@ default is
 UPLOAD_AVATAR_GET_UID_FUNC = lambda request: request.user.id
 ```
 
+as same as `UPLOAD_AVATAR_TEST_FUNC`, If you are using custom user system,
+maybe you should define this func.
+
 ###### UPLOAD_AVATAR_RESIZE_SIZE
 
 How many different sizes you wanna to resize.
@@ -159,7 +164,7 @@ Default is: `[50,]`
 ###### UPLOAD_AVATAR_DEFAULT_SIZE
 
 Avatar default size which will be shown in you website,
-this is for call user.get_avatar_path(), user.get_avatar_url() more convenient
+this is for call `user.get_avatar_path()`, `user.get_avatar_url()` more convenient
 
 
 ###### UPLOAD_AVATAR_SAVE_FORMAT
@@ -179,4 +184,4 @@ All settings and Details, Default Values see [app_settings.py][3]
 
 [1]: http://www.youtube.com/watch?v=570yBlCfm5g
 [2]: http://v.youku.com/v_show/id_XNTQyNDA0OTQ4.html
-[3]: /avatar_upload/app_settings.py
+[3]: /upload_avatar/app_settings.py
