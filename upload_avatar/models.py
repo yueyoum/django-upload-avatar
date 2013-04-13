@@ -5,7 +5,13 @@ from django.db import models
 from django.db.models.signals import post_delete
 
 
-from .app_settings import UPLOAD_AVATAR_UPLOAD_ROOT, UPLOAD_AVATAR_AVATAR_ROOT, UPLOAD_AVATAR_URL_PREFIX_CROPPED, UPLOAD_AVATAR_SAVE_FORMAT, UPLOAD_AVATAR_DEFAULT_SIZE
+from .app_settings import (
+    UPLOAD_AVATAR_UPLOAD_ROOT,
+    UPLOAD_AVATAR_AVATAR_ROOT,
+    UPLOAD_AVATAR_URL_PREFIX_CROPPED,
+    UPLOAD_AVATAR_SAVE_FORMAT,
+    UPLOAD_AVATAR_DEFAULT_SIZE,
+)
 
 
 class UploadAvatarMixIn:

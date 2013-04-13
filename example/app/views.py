@@ -13,7 +13,7 @@ from upload_avatar.app_settings import (
     UPLOAD_AVATAR_RESIZE_SIZE,
 )
 
-from upload_avatar import uploadavatar_context
+from upload_avatar import get_uploadavatar_context
 
 from .models import User
 
@@ -74,7 +74,7 @@ def home(request):
 def upload(request):
     return render_to_response(
         'upload.html',
-        uploadavatar_context,
+        get_uploadavatar_context(),
         context_instance = RequestContext(request)
     )
 
