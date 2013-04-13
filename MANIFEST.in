@@ -1,0 +1,12 @@
+include LICENSE
+include MANIFEST.in
+include ChangeLog
+include README.txt
+recursive-include upload_avatar/static *
+recursive-include upload_avatar/templates *
+recursive-include example *
+recursive-exclude example/avatar *
+recursive-exclude example/upload *
+recursive-exclude example/static *
+recursive-exclude * *.pyc
+exclude example/test.db
