@@ -8,8 +8,6 @@
         }
         
         #uploadAvatarBtnLayout {
-            width: 100px;
-            height: 40px;
             overflow: hidden;
         }
         
@@ -22,8 +20,6 @@
             position: absolute;
             top: 0;
             left: -20px;
-            opacity: 0;
-            filter: alpha(opacity=0);
             font-size: 300%;
         }
         
@@ -58,7 +54,7 @@
             var input_width = $('#uploadAvatarBtnLayout').width();
             var input_height = $('#uploadAvatarBtnLayout').height();
             
-            $('#uploadAvatarInputFile').width(input_width + 50).height(input_height).change(function(){
+            $('#uploadAvatarInputFile').css({opacity: 0}).width(input_width + 50).height(input_height).change(function(){
                 if($(this).val() == ''){return;}
                 var $last_img = $('#uploadAvatarSelectArea img');
                 if($last_img.length) {
