@@ -76,7 +76,7 @@ def upload_avatar(request):
     
     fpath = os.path.join(UPLOAD_AVATAR_UPLOAD_ROOT, new_name)
     
-    with open(fpath, 'w') as f:
+    with open(fpath, 'wb') as f:
         for c in uploaded_file.chunks(10240):
             f.write(c)
             
